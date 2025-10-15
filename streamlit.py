@@ -50,7 +50,6 @@ content_type_dropbox = st.selectbox(
 if content_type_dropbox == "Youtube Video":
     input_context = st.text_input("Enter video URL", value=None, max_chars=None, key=None, type="default", help=None,
                                   autocomplete=None, placeholder="https://youtube.com/watch/4141e12?1221", label_visibility="visible", width="stretch")
-
 elif content_type_dropbox == "Blog post":
     input_context = st.text_input("Enter BlogPost URL", value=None, max_chars=None, key=None, type="default", help=None,
                                   autocomplete=None, placeholder="https://medium.com/engage/collective-be-....", label_visibility="visible", width="stretch")
@@ -92,6 +91,17 @@ if button_gen:
     content_generated = extract_content(selected , selected_instructions ,prompt ,content_type_dropbox, input_context)
 st.write(content_generated)
 
+def getHashtags(content_type , content):
+  if content_type  == "twitter":
+    hash_string = ""
+    for x in content.twitter_hashtags:
+        hash_string += f"<a href='#' class='tweet-tag'>{x}</a>"+"\n"
+    return hash_string
+  if content_type  == "instagram":
+    hash_string = ""
+    for x in content.instagram_hashtags:
+        hash_string += f"<a href='#' class='ig-tag'>{x}</a>"+"\n"
+    return hash_string
 if(content_generated):
   twitter_string = f"""
       <!-- ===== Twitter-like Post Card (Drop-in HTML+CSS) ===== -->
@@ -112,7 +122,7 @@ if(content_generated):
 
       <!-- Content (EDIT THIS TEXT) -->
       <div class="tweet-text">
-      {content_generated["twitter_post"]}
+      {content_generated.twitter_post}
       </div>
 
       <!-- Optional media (remove if not needed) -->
@@ -125,6 +135,7 @@ if(content_generated):
         <a href="#" class="tweet-tag">#OpenSource</a>
         <a href="#" class="tweet-tag">#Privacy</a>
         <a href="#" class="tweet-tag">#LaunchDay</a>
+        {getHashtags("twitter",content_generated)}
       </div>
 
       <!-- Actions -->
@@ -234,7 +245,7 @@ if(content_generated):
   </style>
   <!-- ===== End Card ===== -->
   """
-  instagram_string = """
+  instagram_string = f"""
   <!-- ===== Instagram Post Card (Drop-in HTML+CSS) ===== -->
   <div class="ig-card">
     <!-- Header -->
@@ -282,12 +293,10 @@ if(content_generated):
     <div class="ig-caption">
       <span class="ig-name">jane.doe</span>
       <span class="ig-text">
-        Launch day ✨ Built with love and late nights. Drop your thoughts below!
+        {content_generated.instagram_caption}
       </span>
       <span class="ig-tags">
-        <a href="#" class="ig-tag">#Startups</a>
-        <a href="#" class="ig-tag">#Creator</a>
-        <a href="#" class="ig-tag">#Reels</a>
+        {getHashtags("instagram",content_generated)}
       </span>
     </div>
 
@@ -299,7 +308,7 @@ if(content_generated):
   </div>
 
   <style>
-    :root {
+    :root {{
       --bg: #000;
       --card: #0f0f0f;
       --text: #eaeaea;
@@ -309,8 +318,8 @@ if(content_generated):
       --accent: #ff2d55; /* IG vibe */
       --radius: 14px;
       --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
-    }
-    .ig-card {
+    }}
+    .ig-card {{
       width: 100%;
       max-width: 540px;
       border: 1px solid var(--border);
@@ -320,62 +329,62 @@ if(content_generated):
       color: var(--text);
       font-family: var(--font);
       overflow: hidden;
-    }
-    .ig-header {
+    }}
+    .ig-header {{
       display: flex; align-items: center; gap: 12px;
       padding: 12px 14px;
-    }
-    .ig-avatar {
+    }}
+    .ig-avatar {{
       width: 38px; height: 38px; border-radius: 999px; object-fit: cover;
       border: 2px solid transparent;
       background:
         radial-gradient(#fff 0 0) padding-box,
         conic-gradient(#f58529, #feda77, #dd2a7b, #8134af, #515bd4, #f58529) border-box;
-    }
-    .ig-user { display: flex; flex-direction: column; line-height: 1.15; }
-    .ig-user-top { display: flex; align-items: center; gap: 6px; }
-    .ig-name { font-weight: 700; font-size: 14px; }
-    .ig-verified { font-size: 12px; color: #58a6ff; }
-    .ig-meta { color: var(--muted); font-size: 12px; }
-    .ig-more {
+    }}
+    .ig-user {{ display: flex; flex-direction: column; line-height: 1.15; }}
+    .ig-user-top {{ display: flex; align-items: center; gap: 6px; }}
+    .ig-name {{ font-weight: 700; font-size: 14px; }}
+    .ig-verified {{ font-size: 12px; color: #58a6ff; }}
+    .ig-meta {{ color: var(--muted); font-size: 12px; }}
+    .ig-more {{
       margin-left: auto; background: transparent; color: var(--text);
       border: 0; font-size: 20px; cursor: pointer;
-    }
+    }}
 
-    .ig-media img, .ig-media video { display: block; width: 100%; height: auto; background: #111; }
+    .ig-media img, .ig-media video {{ display: block; width: 100%; height: auto; background: #111; }}
 
-    .ig-actions {
+    .ig-actions {{
       display: flex; align-items: center; justify-content: space-between;
       padding: 8px 10px;
-    }
-    .ig-actions-left { display: flex; gap: 10px; }
-    .ig-btn {
+    }}
+    .ig-actions-left {{ display: flex; gap: 10px; }}
+    .ig-btn {{
       background: transparent; border: 0; color: var(--text);
       padding: 6px; cursor: pointer; border-radius: 999px;
-    }
-    .ig-btn:hover { background: #151515; }
-    .ig-save { margin-left: auto; }
+    }}
+    .ig-btn:hover {{ background: #151515; }}
+    .ig-save {{ margin-left: auto; }}
 
-    .ig-likes {
+    .ig-likes {{
       font-weight: 700; font-size: 14px; padding: 0 12px; margin-top: 2px;
-    }
-    .ig-caption {
+    }}
+    .ig-caption {{
       padding: 6px 12px 0 12px; font-size: 14px; line-height: 1.45;
-    }
-    .ig-caption .ig-name { margin-right: 6px; }
-    .ig-text { color: var(--text); }
-    .ig-tags { display: inline; }
-    .ig-tag { color: #a8c6ff; text-decoration: none; margin-left: 6px; }
-    .ig-tag:hover { text-decoration: underline; }
+    }}
+    .ig-caption .ig-name {{ margin-right: 6px; }}
+    .ig-text {{ color: var(--text); }}
+    .ig-tags {{ display: inline; }}
+    .ig-tag {{ color: #a8c6ff; text-decoration: none; margin-left: 6px; }}
+    .ig-tag:hover {{ text-decoration: underline; }}
 
-    .ig-view-comments {
+    .ig-view-comments {{
       display: block; background: transparent; border: 0; color: var(--muted);
       font-size: 14px; padding: 6px 12px; cursor: pointer; text-align: left;
-    }
-    .ig-time {
+    }}
+    .ig-time {{
       color: var(--muted); font-size: 11px; letter-spacing: .2px;
       padding: 6px 12px 12px 12px;
-    }
+    }}
   </style>
   """
   scripts_string = """
